@@ -1,27 +1,34 @@
 # -*- coding: utf-8 -*-
 from io import open
-from setuptools import setup, find_packages
+from pathlib import Path
+
+from setuptools import setup
 
 # ------------------------------------------------------------------------------- #
 
 with open('README.md', 'r', encoding='utf-8') as fp:
     readme = fp.read()
 
-# with open("requirements.txt", "r", encoding="utf8") as f:
-#     requires = f.read()
-#     print(requires.splitlines())
 # ------------------------------------------------------------------------------- #
 
+about = {}
+here = Path(__file__).parent
+with (here /"src"/"cloudbypass"/"__version__.py").open(encoding="utf-8") as f:
+    exec(f.read(), about)
+
+# ------------------------------------------------------------------------------- #
+
+
 setup(
-    name='cloudbypass',
-    author='howard',
-    author_email='437983438@qq.com',
-    version='0.0.1',
-    packages=find_packages('cloudbypass'),
-    package_dir={'': 'cloudbypass'},
-    description='Cloudbypass SDK for Python',
+    name=about["__title__"],
+    version=about["__version__"],
+    description=about["__description__"],
+    author=about["__author__"],
+    author_email=about["__author_email__"],
     long_description=readme,
     long_description_content_type='text/markdown',
+    packages=["cloudbypass"],
+    package_dir={"": "src"},
     keywords=[
         'cloudflare',
         'bypass',
