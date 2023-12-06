@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://cloudbypass.com/" target="_blank" rel="noopener noreferrer" >
     <div align="center">
-        <img src="assets/img.png" alt="Cloudbypass" height="50">
+        <img src="https://github.com/cloudbypass/python-sdk/blob/main/assets/img.png?raw=true" alt="Cloudbypass" height="50">
     </div>
   </a>
 </p>
