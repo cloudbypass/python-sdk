@@ -7,7 +7,7 @@ from requests.adapters import HTTPAdapter
 def get_api_host(api_host=None):
     res = re.match(
         r"^((?:http|https):(//)?)?([\w.-]+)(:(\d+))?$",
-        api_host or os.environ.get("CB_API_HOST", "https://api.cloudbypass.com")
+        api_host or os.environ.get("CB_APIHOST", "https://api.cloudbypass.com")
     )
     if not res:
         raise ValueError("Invalid ENV_API_HOST")

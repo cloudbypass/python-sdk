@@ -10,7 +10,7 @@ from .exceptions import (
 )
 
 ENV_APIKEY = os.environ.get("CB_APIKEY", "")
-ENV_PROXY = os.environ.get("PROXY", "")
+ENV_PROXY = os.environ.get("CB_PROXY", "")
 
 
 class CloudbypassSession(Session):
