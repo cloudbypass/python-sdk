@@ -1,5 +1,5 @@
 import os
-from requests import request,Session
+from requests import request, Session
 from .adapters import CfbHTTPAdapter as HTTPAdapter
 from .exceptions import (
     BypassError,
@@ -24,7 +24,11 @@ class CloudbypassSession(Session):
         self.mount("https://", HTTPAdapter(api_host))
         self.mount("http://", HTTPAdapter(api_host))
 
-    def request(self, method, url, **kwargs):
+    def v2(self, method, url, part="0", **kwargs):
+        return self.request(method, url, part=part, **kwargs)
+
+    def request(self, method, url, part=None, **kwargs):
+        kwargs['headers'] = kwargs.get("headers", {})
         options = set(kwargs.get("headers", {}).get("x-cb-options", "").lower().split(","))
         options.add("disable-redirect")
         options.add("full-cookie")
@@ -34,10 +38,16 @@ class CloudbypassSession(Session):
             "x-cb-options": ",".join(options)
         }
 
-        if kwargs.get("headers"):
-            kwargs['headers'].update(headers)
-        else:
-            kwargs['headers'] = headers
+        # Use V2 API
+        if part is not None and str(part).isdigit():
+            headers['x-cb-version'] = "2"
+            headers['x-cb-part'] = str(part)
+
+        # Use Proxy
+        if kwargs.get("proxy"):
+            headers['x-cb-proxy'] = kwargs.pop("proxy")
+
+        kwargs['headers'].update(headers)
 
         resp = super().request(method, url, **kwargs)
 
@@ -53,3 +63,24 @@ class CloudbypassSession(Session):
             raise APIError(**resp.json())
 
         return resp.json()["balance"]
+
+    def get(self, url, **kwargs):
+        return super().get(url, **kwargs)
+
+    def options(self, url, **kwargs):
+        return super().options(url, **kwargs)
+
+    def head(self, url, **kwargs):
+        return super().head(url, **kwargs)
+
+    def post(self, url, data=None, json=None, **kwargs):
+        return super().post(url, data=data, json=json, **kwargs)
+
+    def put(self, url, data=None, **kwargs):
+        return super().put(url, data=data, **kwargs)
+
+    def patch(self, url, data=None, **kwargs):
+        return super().patch(url, data=data, **kwargs)
+
+    def delete(self, url, **kwargs):
+        return super().delete(url, **kwargs)
