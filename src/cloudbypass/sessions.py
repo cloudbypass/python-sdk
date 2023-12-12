@@ -15,27 +15,33 @@ ENV_PROXY = os.environ.get("CB_PROXY", "")
 
 class CloudbypassSession(Session):
 
-    def __init__(self, apikey=None, proxy=None, api_host=None):
+    def __init__(self, apikey=None, proxy=None, api_host=None, options=None):
         super().__init__()
         self.apikey = apikey or ENV_APIKEY
+        self.options = self.__parse_options(options)
         self.headers.update({
             "x-cb-proxy": proxy or ENV_PROXY
         })
         self.mount("https://", HTTPAdapter(api_host))
         self.mount("http://", HTTPAdapter(api_host))
 
+    def __parse_options(self, options):
+        _options = {"disable-redirect", "full-cookie"}
+        if isinstance(options, (list, set)):
+            _options.update(options)
+        if isinstance(options, str):
+            _options.update(options.lower().replace(" ", "").split(","))
+        return ",".join(_options)
+
     def v2(self, method, url, part="0", **kwargs):
         return self.request(method, url, part=part, **kwargs)
 
-    def request(self, method, url, part=None, **kwargs):
+    def request(self, method, url, part=None, options=None, **kwargs):
         kwargs['headers'] = kwargs.get("headers", {})
-        options = set(kwargs.get("headers", {}).get("x-cb-options", "").lower().split(","))
-        options.add("disable-redirect")
-        options.add("full-cookie")
 
         headers = {
             "x-cb-apikey": self.apikey,
-            "x-cb-options": ",".join(options)
+            "x-cb-options": self.__parse_options(options or self.options)
         }
 
         # Use V2 API
