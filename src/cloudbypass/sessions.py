@@ -3,10 +3,7 @@ from requests import request, Session
 from .adapters import CfbHTTPAdapter as HTTPAdapter
 from .exceptions import (
     BypassError,
-    BypassRequestError,
-    BypassFailedError,
-    BypassTimeoutError,
-    BypassServerError, APIError
+    APIError
 )
 
 ENV_APIKEY = os.environ.get("CB_APIKEY", "")
