@@ -6,7 +6,6 @@
   </a>
 </p>
 
-
 ## Cloudbypass SDK for Python
 
 ### 开始使用
@@ -44,6 +43,20 @@ from cloudbypass import Session
 if __name__ == '__main__':
     with Session(apikey="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", proxy="http://proxy:port") as session:
         resp = session.get("https://opensea.io/category/memberships")
+        print(resp.status_code, resp.headers.get("x-cb-status"))
+        print(resp.text)
+```
+
+### 使用V2
+
+穿云API V2适用于需要通过JS质询验证的网站。例如访问https://etherscan.io/accounts/label/lido，请求示例：
+
+```python
+from cloudbypass import Session
+
+if __name__ == '__main__':
+    with Session(apikey="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", proxy="http://proxy:port") as session:
+        resp = session.get("https://etherscan.io/accounts/label/lido", part="0")
         print(resp.status_code, resp.headers.get("x-cb-status"))
         print(resp.text)
 ```
