@@ -125,7 +125,7 @@ class CloudbypassProxy:
         expire = self.expire if isinstance(self.expire, int) and 0 < self.expire <= 5184000 else None
 
         if self.__region is not None:
-            options.append(self.__region)
+            options.append(self.__region.replace(' ', '+'))
 
         if expire is not None:
             for time, unit in [(60, 's'), (60, 'm'), (24, 'h'), (999, 'd')]:
