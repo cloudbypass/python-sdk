@@ -1,7 +1,7 @@
 import os
 from requests import request, Session
 
-from . import CloudbypassProxy
+from .proxy import CloudbypassProxy
 from .adapters import CfbHTTPAdapter as HTTPAdapter
 from .exceptions import (
     BypassError,
