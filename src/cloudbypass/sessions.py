@@ -1,5 +1,7 @@
 import os
 from requests import request, Session
+
+from . import CloudbypassProxy
 from .adapters import CfbHTTPAdapter as HTTPAdapter
 from .exceptions import (
     BypassError,
@@ -17,7 +19,7 @@ class CloudbypassSession(Session):
         self.apikey = apikey or ENV_APIKEY
         self.options = self.__parse_options(options)
         self.headers.update({
-            "x-cb-proxy": proxy or ENV_PROXY
+            "x-cb-proxy": (str(proxy) if isinstance(proxy, CloudbypassProxy) else proxy) or ENV_PROXY,
         })
         self.mount("https://", HTTPAdapter(api_host))
         self.mount("http://", HTTPAdapter(api_host))
@@ -48,7 +50,7 @@ class CloudbypassSession(Session):
 
         # Use Proxy
         if kwargs.get("proxy"):
-            headers['x-cb-proxy'] = kwargs.pop("proxy")
+            headers['x-cb-proxy'] = str(kwargs.pop("proxy"))
 
         kwargs['headers'].update(headers)
 

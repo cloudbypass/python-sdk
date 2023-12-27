@@ -1,3 +1,4 @@
+from .proxy import CloudbypassProxy
 from .sessions import CloudbypassSession as Session
 from .adapters import CfbHTTPAdapter as HTTPAdapter
 from .api import delete, get, head, options, patch, post, put, request, get_balance
