@@ -147,16 +147,6 @@ class CloudbypassProxy:
             gateway=self.gateway
         )
 
-    def new(self):
-        """
-        Copy a new proxy
-        :return:
-        """
-        return CloudbypassProxy(f"{self.username}:{self.password}", **{
-            'region': self.__region,
-            'expire': self.__expire,
-        })
-
     def __str__(self):
         """
         :return:
@@ -171,6 +161,18 @@ class CloudbypassProxy:
 
     def __copy__(self):
         """
+        Copy a new proxy
         :return:
         """
-        return self.new()
+        return CloudbypassProxy(f"{self.username}:{self.password}", **{
+            'region': self.__region,
+            'expire': self.__expire,
+        })
+
+    def new(self):
+        """
+        Copy a new proxy
+        :return:
+        """
+        return self.__copy__()
+
