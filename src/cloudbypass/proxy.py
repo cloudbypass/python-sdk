@@ -3,8 +3,6 @@ import re
 
 
 class CloudbypassProxy:
-    # 默认网关
-    __default_gateway = 'gw.cloudbypass.com:1288'
 
     def __init__(self, auth, **kwargs):
         """
@@ -13,6 +11,7 @@ class CloudbypassProxy:
         self.__username, self.__password = self.check_auth(auth)
         self.__region = kwargs.get('region')
         self.__expire = kwargs.get('expire', 0)
+        self.__gateway = kwargs.get('gateway', 'gw.cloudbypass.com:1288')
         self.__session_id = None
 
     def set_expire(self, expire):
@@ -35,7 +34,7 @@ class CloudbypassProxy:
         :param gateway:
         :return:
         """
-        self.__default_gateway = gateway
+        self.__gateway = gateway
         self.__session_id = None
         return self
 
@@ -75,7 +74,7 @@ class CloudbypassProxy:
         """
         :return:
         """
-        return self.__default_gateway
+        return self.__gateway
 
     @property
     def expire(self):
@@ -134,8 +133,8 @@ class CloudbypassProxy:
         """
         return format_str.format(
             username=self.__parse_options(),
-            password=self.password,
-            gateway=self.gateway
+            password=self.__password,
+            gateway=self.__gateway
         )
 
     def limit(self, count):
