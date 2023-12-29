@@ -80,9 +80,10 @@ if __name__ == '__main__':
 + `set_dynamic()` 设置为动态代理。
 + `set_expire(int)` 设置为时效代理，参数为IP过期时间，单位为秒。
 + `set_region(str)` 设置代理IP地区。
-+ `clear_region()` 清除代理的地区设置。
-+ `limit(int)` 返回一个代理IP迭代器，参数为提取数量。
-+ `loop(int)` 返回一个代理IP循环迭代器，参数为实际数量。
++ `clear_region()` 清除代理的地区。
++ `format(str)` 格式化代理IP，参数为格式化字符串，例如`{username}:{password}@gateway`。
++ `limit(int, str)` 返回一个代理IP字符串迭代器，参数为提取数量及代理格式化字符串。
++ `loop(int, str)` 返回一个代理IP字符串循环迭代器，参数为实际数量及代理格式化字符串。
 
 ```python
 from cloudbypass import Proxy

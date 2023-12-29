@@ -14,6 +14,18 @@ class CloudbypassProxy:
         self.__gateway = kwargs.get('gateway', 'gw.cloudbypass.com:1288')
         self.__session_id = None
 
+    @staticmethod
+    def check_auth(auth):
+        """
+        :param auth:
+        :return:
+        """
+        content = re.match(r'^(\w+-(res|dat)):(\w+)$', auth)
+        if auth is None or content is None:
+            raise ValueError('Invalid auth format')
+
+        return content.group(1), content.group(3)
+
     def set_expire(self, expire):
         """
         :param expire: Unit: second
@@ -83,18 +95,6 @@ class CloudbypassProxy:
         """
         return self.__expire
 
-    @staticmethod
-    def check_auth(auth):
-        """
-        :param auth:
-        :return:
-        """
-        content = re.match(r'^(\w+-(res|dat)):(\w+)$', auth)
-        if auth is None or content is None:
-            raise ValueError('Invalid auth format')
-
-        return content.group(1), content.group(3)
-
     @property
     def session_id(self):
         """
@@ -126,19 +126,20 @@ class CloudbypassProxy:
 
         return '_'.join(options)
 
-    def format(self, format_str='{username}:{password}@{gateway}'):
+    def format(self, format_str=None):
         """
         :param format_str: {username}:{password}@{gateway}
         :return:
         """
-        return format_str.format(
+        return (format_str or '{username}:{password}@{gateway}').format(
             username=self.__parse_options(),
             password=self.__password,
             gateway=self.__gateway
         )
 
-    def limit(self, count):
+    def limit(self, count, format_str=None):
         """
+        :param format_str:
         :param count:
         :return:
         """
@@ -146,10 +147,12 @@ class CloudbypassProxy:
             raise ValueError('count must be greater than 0')
 
         for _ in range(count):
-            yield self.__next__()
+            self.__session_id = None
+            yield self.format(format_str)
 
-    def loop(self, count):
+    def loop(self, count, format_str=None):
         """
+        :param format_str:
         :param count:
         :return:
         """
@@ -158,7 +161,7 @@ class CloudbypassProxy:
         if count <= 0:
             raise ValueError('count must be greater than 0')
 
-        for _ in self.limit(count):
+        for _ in self.limit(count, format_str):
             __pool.append(_)
             yield _
 
