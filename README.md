@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
 ### 提取代理
 
-通过`CloudbypassProxy as Proxy`类可以提取动态代理和时效代理。
+通过`CloudbypassProxy as Proxy`类可以提取穿云动态代理IP和时效代理IP。
 
 + `copy()` 复制当前对象，使原有的对象不会受到影响。
 + `set_dynamic()` 设置为动态代理。
