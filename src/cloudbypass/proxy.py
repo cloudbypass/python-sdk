@@ -193,6 +193,7 @@ class CloudbypassProxy:
         return CloudbypassProxy(f"{self.username}:{self.password}", **{
             'region': self.__region,
             'expire': self.__expire,
+            'gateway': self.__gateway,
         })
 
     def __iter__(self):
