@@ -137,6 +137,42 @@ class CloudbypassProxy:
             gateway=self.gateway
         )
 
+    def limit(self, count):
+        """
+        :param count:
+        :return:
+        """
+        if count <= 0:
+            raise ValueError('count must be greater than 0')
+
+        for _ in range(count):
+            yield self.__next__()
+
+    def loop(self, count):
+        """
+        :param count:
+        :return:
+        """
+        __pool = []
+
+        if count <= 0:
+            raise ValueError('count must be greater than 0')
+
+        for _ in self.limit(count):
+            __pool.append(_)
+            yield _
+
+        while True:
+            for _ in __pool:
+                yield _
+
+    def copy(self):
+        """
+        Copy a new proxy
+        :return:
+        """
+        return self.__copy__()
+
     def __str__(self):
         """
         :return:
@@ -159,9 +195,15 @@ class CloudbypassProxy:
             'expire': self.__expire,
         })
 
-    def copy(self):
+    def __iter__(self):
         """
-        Copy a new proxy
         :return:
         """
+        return self
+
+    def __next__(self):
+        """
+        :return:
+        """
+        self.__session_id = None
         return self.__copy__()

@@ -72,6 +72,46 @@ if __name__ == '__main__':
 
 ```
 
+### 提取代理
+
+通过`CloudbypassProxy as Proxy`类可以提取动态代理和时效代理。
+
++ `copy()` 复制当前对象，使原有的对象不会受到影响。
++ `set_dynamic()` 设置为动态代理。
++ `set_expire(int)` 设置为时效代理，参数为IP过期时间，单位为秒。
++ `set_region(str)` 设置代理IP地区。
++ `clear_region()` 清除代理的地区设置。
++ `limit(int)` 返回一个代理IP迭代器，参数为提取数量。
++ `loop(int)` 返回一个代理IP循环迭代器，参数为实际数量。
+
+```python
+from cloudbypass import Proxy
+
+if __name__ == '__main__':
+    proxy = Proxy("username-res:password")
+
+    # 提取动态代理
+    print("Extract dynamic proxy: ")
+    print(str(proxy.set_dynamic()))
+    print(str(proxy.set_region('US')))
+
+    # 提取时效代理并指定地区
+    print("Extract proxy with expire and region: ")
+    print(str(proxy.copy().set_expire(60 * 30).set_region('US')))
+
+    # 批量提取
+    print("Extract five 10-minute aging proxies: ")
+    pool = proxy.copy().set_expire(60 * 10).set_region('US').limit(5)
+    for _ in pool:
+        print(_)
+
+    # 循环提取
+    print("Loop two 10-minute aging proxies: ")
+    loop = proxy.copy().set_expire(60 * 10).set_region('US').loop(2)
+    for _ in range(10):
+        print(loop.__next__())
+```
+
 ### 关于重定向问题
 
 使用SDK发起请求时，重定向操作会自动处理，无需手动处理。且重定向响应也会消耗积分。
