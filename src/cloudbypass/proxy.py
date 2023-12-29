@@ -90,10 +90,11 @@ class CloudbypassProxy:
         :param auth:
         :return:
         """
-        if auth is None or re.match(r'^\w+-(res|dat):\w+$', auth) is None:
+        content = re.match(r'^(\w+-(res|dat)):(\w+)$', auth)
+        if auth is None or content is None:
             raise ValueError('Invalid auth format')
 
-        return auth.split(':')
+        return content.group(1), content.group(3)
 
     @property
     def session_id(self):
