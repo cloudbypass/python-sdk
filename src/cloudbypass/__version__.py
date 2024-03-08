@@ -1,0 +1,5 @@
+__title__ = "cloudbypass"
+__description__ = "Cloudbypass SDK for Python."
+__version__ = "0.1.0"
+__author__ = "NULL"
+__author_email__ = "python@cloudbypass.com"

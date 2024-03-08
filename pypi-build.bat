@@ -1,0 +1,1 @@
+python -m build --no-isolation --wheel --sdist --outdir dist/ .
