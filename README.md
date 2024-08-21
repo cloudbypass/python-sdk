@@ -14,7 +14,6 @@
 
 在`psf/requests`基础上封装的穿云SDK，支持穿云API服务的调用。通过内置的会话管理器，可以自动处理会话请求，无需手动管理Cookie等信息。
 
-使用`get_balance`方法可以查询当前账户余额。
 
 [![cloudbypass](https://img.shields.io/pypi/pyversions/cloudbypass)](https://pypi.org/project/cloudbypass/)
 [![cloudbypass](https://img.shields.io/pypi/v/cloudbypass)](https://pypi.org/project/cloudbypass/)
@@ -106,6 +105,8 @@ if __name__ == '__main__':
 ```
 
 ### 查询余额
+
+使用`get_balance`方法可以查询当前账户余额。
 
 ```python
 from cloudbypass import get_balance
