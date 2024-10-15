@@ -120,7 +120,7 @@ class CloudbypassProxy:
         if expire is not None:
             for time, unit in [(60, 's'), (60, 'm'), (24, 'h'), (999, 'd')]:
                 if expire < time or expire % time:
-                    options.append(f'{self.session_id}-{expire}{unit}')
+                    options.append(f's{self.session_id}-{expire}{unit}')
                     break
                 expire //= time
 
