@@ -10,7 +10,7 @@
 
 ### 开始使用
 
-> Cloudbypass Python SDK 仅支持 Python 3.6 及以上版本。
+> Cloudbypass Python SDK 仅支持 Python 3.7 及以上版本。
 
 在`psf/requests`基础上封装的穿云SDK，支持穿云API服务的调用。通过内置的会话管理器，可以自动处理会话请求，无需手动管理Cookie等信息。
 

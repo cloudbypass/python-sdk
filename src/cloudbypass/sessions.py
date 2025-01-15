@@ -214,5 +214,5 @@ class AsyncCloudbypassSession(ClientSession):
 
 
 class AsyncCloudbypassSessionV2(AsyncCloudbypassSession):
-    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, part=None):
-        super().__init__(apikey, proxy, api_host, options, True, part)
+    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, part=None, **kwargs):
+        super().__init__(apikey, proxy, api_host, options, True, part, **kwargs)
