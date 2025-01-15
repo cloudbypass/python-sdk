@@ -40,13 +40,14 @@ def parse_options(options):
 
 class CloudbypassSession(Session):
 
-    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, part=None):
+    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, use_v2=False, part=None):
         super().__init__()
         self.apikey = apikey or ENV_APIKEY
         self.options = parse_options(options)
         self.headers.update({
             "x-cb-proxy": (str(proxy) if isinstance(proxy, CloudbypassProxy) else proxy) or ENV_PROXY,
         })
+        self.use_v2 = use_v2
         self.part = part
         self.mount("https://", HTTPAdapter(get_api_host(api_host)))
         self.mount("http://", HTTPAdapter(get_api_host(api_host)))
@@ -67,6 +68,9 @@ class CloudbypassSession(Session):
         if part is not None and str(part).isdigit():
             headers['x-cb-version'] = "2"
             headers['x-cb-part'] = str(part)
+
+        if self.use_v2:
+            headers['x-cb-version'] = "2"
 
         # Use Proxy
         if kwargs.get("proxy"):
@@ -111,6 +115,11 @@ class CloudbypassSession(Session):
         return super().delete(url, **kwargs)
 
 
+class CloudbypassSessionV2(CloudbypassSession):
+    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, part=None):
+        super().__init__(apikey, proxy, api_host, options, True, part)
+
+
 def make_request_class(api_host: URL):
     class AsyncCloudbypassClientRequest(ClientRequest):
         def __init__(self, method: str, url: URL, *args, **kwargs):
@@ -127,10 +136,11 @@ def make_request_class(api_host: URL):
 
 class AsyncCloudbypassSession(ClientSession):
 
-    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, part=None, **kwargs):
+    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, use_v2=False, part=None, **kwargs):
         super().__init__(**kwargs)
         self.apikey = apikey or ENV_APIKEY
         self.options = parse_options(options)
+        self.use_v2 = use_v2
         self.part = part
         self.headers.update({
             "x-cb-proxy": (str(proxy) if isinstance(proxy, CloudbypassProxy) else proxy) or ENV_PROXY,
@@ -153,6 +163,9 @@ class AsyncCloudbypassSession(ClientSession):
         if part is not None and str(part).isdigit():
             headers['x-cb-version'] = "2"
             headers['x-cb-part'] = str(part)
+
+        if self.use_v2:
+            headers['x-cb-version'] = "2"
 
         # Use Proxy
         if kwargs.get("proxy"):
@@ -198,3 +211,8 @@ class AsyncCloudbypassSession(ClientSession):
 
     def delete(self, url, **kwargs) -> _RequestContextManager:
         return self.request("DELETE", url, **kwargs)
+
+
+class AsyncCloudbypassSessionV2(AsyncCloudbypassSession):
+    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, part=None):
+        super().__init__(apikey, proxy, api_host, options, True, part)

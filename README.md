@@ -59,9 +59,8 @@ async def main():
     async with AsyncSession(apikey="<APIKEY>", proxy="http://proxy:port") as session:
         resp = await session.get("https://opensea.io/category/memberships")
         print("Status:", resp.status)
-        print("Content-type:", resp.headers['content-type'])
-        html = await resp.text()
-        print("Body:", html[:15], "...")
+        text = await resp.text()
+        print("Body:", text)
 
 
 if __name__ == '__main__':
@@ -74,29 +73,46 @@ if __name__ == '__main__':
 穿云API V2适用于需要通过JS质询验证的网站。例如访问https://etherscan.io/accounts/label/lido ，请求示例：
 
 ```python
-from cloudbypass import Session
+from cloudbypass import SessionV2
 
 if __name__ == '__main__':
-    with Session(apikey="<APIKEY>", proxy="http://proxy:port") as session:
-        resp = session.get("https://etherscan.io/accounts/label/lido", part="0")
-        print(resp.status_code, resp.headers.get("x-cb-status"))
-        print(resp.text)
+    # Cookie模式：服务端返回加密Cookie，下次请求时由客户端发送验证Cookie
+    with SessionV2(apikey="<APIKEY>", proxy="http://proxy:port") as session:
+        resp = session.get("https://etherscan.io/accounts/label/lido")
+        print("Status:", resp.status_code, resp.headers.get("x-cb-status"))
+        print("Cookie:", resp.headers.get("set-cookie"))
+        print("Body:", resp.text)
+
+    # Part模式：由服务端管理验证Cookie，客户端只需要控制part参数
+    with SessionV2(apikey="<APIKEY>", proxy="http://proxy:port", part="0") as session:
+        resp = session.get("https://etherscan.io/accounts/label/lido")
+        print("Status:", resp.status_code, resp.headers.get("x-cb-status"))
+        print("Body:", resp.text)
+
 ```
 
 #### async
 
 ```python
 import asyncio
-from cloudbypass import AsyncSession
+from cloudbypass import AsyncSessionV2
 
 
 async def main():
-    async with AsyncSession(apikey="<APIKEY>", proxy="http://proxy:port") as session:
-        resp = await session.get("https://etherscan.io/accounts/label/lido", part="0")
+    # Cookie模式：服务端返回加密Cookie，下次请求时由客户端发送验证Cookie
+    async with AsyncSessionV2(apikey="<APIKEY>", proxy="http://proxy:port") as session:
+        resp = await session.get("https://etherscan.io/accounts/label/lido")
         print("Status:", resp.status)
-        print("Content-type:", resp.headers['content-type'])
-        html = await resp.text()
-        print("Body:", html[:15], "...")
+        print("Cookie:", resp.headers.get("set-cookie"))
+        text = await resp.text()
+        print("Body:", text)
+
+    # Part模式：由服务端管理验证Cookie，客户端只需要控制part参数
+    async with AsyncSessionV2(apikey="<APIKEY>", proxy="http://proxy:port", part="0") as session:
+        resp = await session.get("https://etherscan.io/accounts/label/lido")
+        print("Status:", resp.status)
+        text = await resp.text()
+        print("Body:", text)
 
 
 if __name__ == '__main__':
