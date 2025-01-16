@@ -14,7 +14,6 @@
 
 在`psf/requests`基础上封装的穿云SDK，支持穿云API服务的调用。通过内置的会话管理器，可以自动处理会话请求，无需手动管理Cookie等信息。
 
-
 [![cloudbypass](https://img.shields.io/pypi/pyversions/cloudbypass)](https://pypi.org/project/cloudbypass/)
 [![cloudbypass](https://img.shields.io/pypi/v/cloudbypass)](https://pypi.org/project/cloudbypass/)
 [![cloudbypass](https://img.shields.io/pypi/dd/cloudbypass)](https://pypi.org/project/cloudbypass/#files)
@@ -28,13 +27,13 @@ python3 -m pip install cloudbypass -i https://pypi.org/simple
 
 ### 发起请求
 
-`Session`类继承自`requests.Session`，支持`requests`的所有方法。
+`cloudbypass` 基于 `requests` 库，支持所有 `requests` 的方法。
 
-增加初始化参数`apikey`和`proxy`，分别用于设置穿云API服务密钥和代理IP。
+通过添加初始化参数 `apikey` 和 `proxy`，分别用于设置穿云 API 服务密钥和代理 IP。
 
-定制用户可以通过设置`api_host`参数来指定服务地址。
+定制用户可以通过设置 `api_host` 参数来指定服务地址。
 
-> 以上参数可使用环境变量`CB_APIKEY`、`CB_PROXY`和`CB_APIHOST`进行配置。
+> 以上参数也可以通过环境变量 `CB_APIKEY`、`CB_PROXY` 和 `CB_APIHOST` 进行配置。
 
 ```python
 from cloudbypass import Session
@@ -47,8 +46,6 @@ if __name__ == '__main__':
 ```
 
 #### async
-
-`AsyncSession`类继承自`aiohttp.ClientSession`，支持`aiohttp`的所有方法。
 
 ```python
 import asyncio
