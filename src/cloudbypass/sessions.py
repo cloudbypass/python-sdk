@@ -1,11 +1,10 @@
 import os
 import re
 
+from yarl import URL
 from aiohttp.client import _RequestContextManager
 from requests import request, Session
-from aiohttp import ClientSession, ClientRequest
-from yarl import URL
-
+from aiohttp import ClientSession, ClientRequest, InvalidURL
 from .proxy import CloudbypassProxy
 from .adapters import CfbHTTPAdapter as HTTPAdapter
 from .exceptions import (
