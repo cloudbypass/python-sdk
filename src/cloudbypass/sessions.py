@@ -40,7 +40,16 @@ def parse_options(options):
 
 class CloudbypassSession(Session):
 
-    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, use_v2=False, part=None):
+    def __init__(
+            self,
+            apikey=None,
+            proxy=None,
+            api_host=None,
+            options=None,
+            use_v2=False,
+            part=None,
+            raise_for_cloudbypass=True
+    ):
         super().__init__()
         self.apikey = apikey or ENV_APIKEY
         self.options = parse_options(options)
@@ -49,6 +58,7 @@ class CloudbypassSession(Session):
         })
         self.use_v2 = use_v2
         self.part = part
+        self.raise_for_cloudbypass = raise_for_cloudbypass
         self.mount("https://", HTTPAdapter(get_api_host(api_host)))
         self.mount("http://", HTTPAdapter(get_api_host(api_host)))
 
@@ -80,7 +90,7 @@ class CloudbypassSession(Session):
 
         resp = super().request(method, url, **kwargs)
 
-        if resp.status_code != 200 and resp.headers.get("x-cb-status") != "ok":
+        if self.raise_for_cloudbypass and resp.status_code != 200 and resp.headers.get("x-cb-status") != "ok":
             if resp.headers.get("content-type", "").lower().startswith("application/json"):
                 raise BypassError(**resp.json())
 
@@ -124,11 +134,12 @@ def make_request_class(api_host: URL):
     class AsyncCloudbypassClientRequest(ClientRequest):
         def __init__(self, method: str, url: URL, *args, **kwargs):
             headers = kwargs.get("headers", {})
-            headers["x-cb-host"] = url.host
-            kwargs["headers"] = headers
+            if url.host != api_host.host:
+                headers["x-cb-host"] = url.host
+                kwargs["headers"] = headers
+                query = f"?{'&'.join([f'{k}={v}' for k, v in url.query.items()])}" if url.query else ""
+                url = URL(f"{api_host}{url.path}" + query)
 
-            query = f"?{'&'.join([f'{k}={v}' for k, v in url.query.items()])}" if url.query else ""
-            url = URL(f"{api_host}{url.path}" + query)
             super().__init__(method, url, *args, **kwargs)
 
     return AsyncCloudbypassClientRequest
@@ -139,13 +150,14 @@ class AsyncCloudbypassSession(ClientSession):
     def __init__(self, apikey=None, proxy=None, api_host=None, options=None, use_v2=False, part=None, **kwargs):
         super().__init__(**kwargs)
         self.apikey = apikey or ENV_APIKEY
+        self.api_host = URL(get_api_host(api_host))
         self.options = parse_options(options)
         self.use_v2 = use_v2
         self.part = part
         self.headers.update({
             "x-cb-proxy": (str(proxy) if isinstance(proxy, CloudbypassProxy) else proxy) or ENV_PROXY,
         })
-        self._request_class = make_request_class(URL(get_api_host(api_host)))
+        self._request_class = make_request_class(self.api_host)
 
     def v2(self, method, url, part="0", **kwargs) -> _RequestContextManager:
         return self.request(method, url, part=part, **kwargs)
@@ -212,7 +224,25 @@ class AsyncCloudbypassSession(ClientSession):
     def delete(self, url, **kwargs) -> _RequestContextManager:
         return self.request("DELETE", url, **kwargs)
 
+    async def _request(
+            self,
+            method: str,
+            str_or_url: str,
+            *args, **kwargs
+    ):
+        try:
+            url = self._build_url(str_or_url)
+        except ValueError as e:
+            raise InvalidURL(str_or_url) from e
+
+        headers = kwargs.get("headers", {})
+        headers["x-cb-host"] = url.host
+        kwargs["headers"] = headers
+        query = f"?{'&'.join([f'{k}={v}' for k, v in url.query.items()])}" if url.query else ""
+        url = URL(f"{self.api_host}{url.path}" + query)
+        return await super()._request(method, url, *args, **kwargs)
+
 
 class AsyncCloudbypassSessionV2(AsyncCloudbypassSession):
-    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, part=None, **kwargs):
-        super().__init__(apikey, proxy, api_host, options, True, part, **kwargs)
+    def __init__(self, apikey=None, proxy=None, api_host=None, options=None, part=None):
+        super().__init__(apikey, proxy, api_host, options, True, part)
