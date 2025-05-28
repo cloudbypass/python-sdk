@@ -95,8 +95,11 @@ class CloudbypassSession(Session):
 
         return resp
 
-    def get_balance(self, apikey=None):
-        resp = request("GET", "https://console.cloudbypass.com/api/v1/balance?apikey=" + (apikey or self.apikey))
+    def get_balance(self, apikey=None, email=None):
+        resp = request(
+            "GET", "https://console.cloudbypass.com/api/v1/balance",
+            params={"apikey": apikey or self.apikey, "email": email}
+        )
         if resp.status_code != 200:
             raise APIError(**resp.json())
 
@@ -192,10 +195,12 @@ class AsyncCloudbypassSession(ClientSession):
         #
         # return resp
 
-    async def get_balance(self, apikey=None):
+    async def get_balance(self, apikey=None, email=None):
         async with ClientSession() as session:
             resp = await session.get(
-                "https://console.cloudbypass.com/api/v1/balance?apikey=" + (apikey or self.apikey))
+                "https://console.cloudbypass.com/api/v1/balance",
+                params={"apikey": apikey or self.apikey, "email": email}
+            )
 
         if resp.status != 200:
             raise APIError(**await resp.json())

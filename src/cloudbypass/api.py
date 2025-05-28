@@ -37,9 +37,9 @@ def delete(url, **kwargs):
     return request("delete", url, **kwargs)
 
 
-def get_balance(apikey=None):
+def get_balance(apikey=None, email=None):
     with sessions.CloudbypassSession() as session:
-        return session.get_balance(apikey=apikey)
+        return session.get_balance(apikey=apikey, email=email)
 
 
 async def _async_request(method, url, **kwargs):
@@ -79,6 +79,6 @@ def async_delete(url, **kwargs) -> _RequestContextManager:
     return async_request("delete", url, **kwargs)
 
 
-async def async_get_balance(apikey=None):
+async def async_get_balance(apikey=None, email=None):
     async with sessions.AsyncCloudbypassSession() as session:
-        return await session.get_balance(apikey=apikey)
+        return await session.get_balance(apikey=apikey, email=email)
