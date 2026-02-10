@@ -79,7 +79,7 @@ class CloudbypassSession(Session):
             headers['x-cb-part'] = str(part)
 
         if self.use_v2:
-            headers['x-cb-version'] = "2"
+            headers['x-cb-version'] = "2s" if kwargs.get("stream") else "2"
 
         # Use Proxy
         if kwargs.get("proxy"):
@@ -179,7 +179,7 @@ class AsyncCloudbypassSession(ClientSession):
             headers['x-cb-part'] = str(part)
 
         if self.use_v2:
-            headers['x-cb-version'] = "2"
+            headers['x-cb-version'] = "2s" if kwargs.get("stream") else "2"
 
         # Use Proxy
         if kwargs.get("proxy"):
