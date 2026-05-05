@@ -7,6 +7,7 @@ from requests import request, Session
 from aiohttp import ClientSession, ClientRequest, InvalidURL
 from .proxy import CloudbypassProxy
 from .adapters import CfbHTTPAdapter as HTTPAdapter
+from .constants import BALANCE_TYPE_POINTS
 from .exceptions import (
     BypassError,
     APIError
@@ -95,15 +96,20 @@ class CloudbypassSession(Session):
 
         return resp
 
-    def get_balance(self, apikey=None, email=None):
+    def get_balance(self, apikey=None, email=None, *, type=BALANCE_TYPE_POINTS):
         resp = request(
-            "GET", "https://console.cloudbypass.com/api/v1/balance",
-            params={"apikey": apikey or self.apikey, "email": email}
+            "POST",
+            "https://console.cloudbypass.com/api/v1/balance",
+            json={
+                "apikey": apikey or self.apikey,
+                "email": email,
+                "type": type,
+            },
         )
         if resp.status_code != 200:
             raise APIError(**resp.json())
 
-        return resp.json()["balance"]
+        return resp.json()
 
     def get(self, url, **kwargs):
         return super().get(url, **kwargs)
@@ -195,17 +201,21 @@ class AsyncCloudbypassSession(ClientSession):
         #
         # return resp
 
-    async def get_balance(self, apikey=None, email=None):
+    async def get_balance(self, apikey=None, email=None, *, type=BALANCE_TYPE_POINTS):
         async with ClientSession() as session:
-            resp = await session.get(
+            resp = await session.post(
                 "https://console.cloudbypass.com/api/v1/balance",
-                params={"apikey": apikey or self.apikey, "email": email}
+                json={
+                    "apikey": apikey or self.apikey,
+                    "email": email,
+                    "type": type,
+                },
             )
 
         if resp.status != 200:
             raise APIError(**await resp.json())
 
-        return (await resp.json())["balance"]
+        return await resp.json()
 
     def get(self, url, **kwargs) -> _RequestContextManager:
         return self.request("GET", url, **kwargs)

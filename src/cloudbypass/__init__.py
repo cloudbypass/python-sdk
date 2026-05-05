@@ -1,3 +1,5 @@
+from .constants import BALANCE_TYPE_DAT, BALANCE_TYPE_POINTS, BALANCE_TYPE_RES
+from .utils import convert_bytes
 from .proxy import CloudbypassProxy as Proxy
 from .sessions import CloudbypassSession as Session
 from .sessions import CloudbypassSessionV2 as SessionV2

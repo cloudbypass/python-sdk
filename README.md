@@ -119,13 +119,32 @@ if __name__ == '__main__':
 
 ### 查询余额
 
-使用`get_balance`方法可以查询当前账户余额。
+使用 `get_balance` 通过控制台接口 `POST https://console.cloudbypass.com/api/v1/balance` 查询账户用量，请求体为 JSON（原查询参数已改为 JSON 字段）。
+
+通过关键字参数 `type` 指定查询类型（写入请求 JSON 的 `type` 字段）。可使用包内常量 `BALANCE_TYPE_POINTS`、`BALANCE_TYPE_RES`、`BALANCE_TYPE_DAT` 代替字面量。
+
+| 常量 / `type` | 含义 | 响应 JSON |
+|-----------------|------|-----------|
+| `BALANCE_TYPE_POINTS`（默认） | 积分 | `{"balance": 0}` |
+| `BALANCE_TYPE_RES` | 住宅代理流量 | `{"total": 0, "balance": 0}` |
+| `BALANCE_TYPE_DAT` | 机房代理流量 | `{"total": 0, "balance": 0}` |
 
 ```python
-from cloudbypass import get_balance
+from cloudbypass import (
+    BALANCE_TYPE_DAT,
+    BALANCE_TYPE_POINTS,
+    BALANCE_TYPE_RES,
+    get_balance,
+)
 
 if __name__ == '__main__':
+    # 积分
     print(get_balance("<APIKEY>", "<EMAIL>"))
+    print(get_balance("<APIKEY>", "<EMAIL>", type=BALANCE_TYPE_POINTS))
+
+    # 住宅流量 / 机房流量
+    print(get_balance("<APIKEY>", "<EMAIL>", type=BALANCE_TYPE_RES))
+    print(get_balance("<APIKEY>", "<EMAIL>", type=BALANCE_TYPE_DAT))
 
 ```
 
@@ -133,11 +152,12 @@ if __name__ == '__main__':
 
 ```python
 import asyncio
-from cloudbypass import async_get_balance
+from cloudbypass import BALANCE_TYPE_RES, async_get_balance
 
 
 async def main():
     print(await async_get_balance("<APIKEY>", "<EMAIL>"))
+    print(await async_get_balance("<APIKEY>", "<EMAIL>", type=BALANCE_TYPE_RES))
 
 
 if __name__ == '__main__':
@@ -145,6 +165,8 @@ if __name__ == '__main__':
     loop.run_until_complete(main())
 
 ```
+
+`convert_bytes` 可将流量查询结果中的字节数格式化为可读字符串。例如 `convert_bytes(data["balance"])`。
 
 ### 提取代理
 

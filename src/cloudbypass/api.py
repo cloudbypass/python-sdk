@@ -1,6 +1,7 @@
 from aiohttp.client import _RequestContextManager
 
 from . import sessions
+from .constants import BALANCE_TYPE_POINTS
 
 
 def request(method, url, **kwargs):
@@ -37,9 +38,9 @@ def delete(url, **kwargs):
     return request("delete", url, **kwargs)
 
 
-def get_balance(apikey=None, email=None):
+def get_balance(apikey=None, email=None, *, type=BALANCE_TYPE_POINTS):
     with sessions.CloudbypassSession() as session:
-        return session.get_balance(apikey=apikey, email=email)
+        return session.get_balance(apikey=apikey, email=email, type=type)
 
 
 async def _async_request(method, url, **kwargs):
@@ -79,6 +80,6 @@ def async_delete(url, **kwargs) -> _RequestContextManager:
     return async_request("delete", url, **kwargs)
 
 
-async def async_get_balance(apikey=None, email=None):
+async def async_get_balance(apikey=None, email=None, *, type=BALANCE_TYPE_POINTS):
     async with sessions.AsyncCloudbypassSession() as session:
-        return await session.get_balance(apikey=apikey, email=email)
+        return await session.get_balance(apikey=apikey, email=email, type=type)
