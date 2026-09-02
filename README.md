@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
 | 常量 / `type` | 含义 | 响应 JSON |
 |-----------------|------|-----------|
-| `BALANCE_TYPE_POINTS`（默认） | 积分 | `{"balance": 0}` |
+| `BALANCE_TYPE_POINTS`（默认） | 积分 | `{"balance": 0, "expires_at_min": null, "expires_at_max": null}`（时间戳为秒；无到期则为 `null`） |
 | `BALANCE_TYPE_RES` | 住宅代理流量 | `{"total": 0, "balance": 0}` |
 | `BALANCE_TYPE_DAT` | 机房代理流量 | `{"total": 0, "balance": 0}` |
 
